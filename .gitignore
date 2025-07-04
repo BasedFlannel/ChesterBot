@@ -30,3 +30,6 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+#auth.key file so noboy accidentally uploads their bot keys
+bot.key
