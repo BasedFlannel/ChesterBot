@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math/rand/v2"
 	"os"
 	"os/signal"
 	"strings"
@@ -43,6 +44,7 @@ func helloMesages(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	//Chester Commands
 	if strings.HasPrefix(m.Content, "chester") || strings.HasPrefix(m.Content, "Chester") {
 		log.Println(m.Content)
 
@@ -54,13 +56,40 @@ func helloMesages(s *discordgo.Session, m *discordgo.MessageCreate) {
 					log.Printf("image found: %+v\n", attatchment.ProxyURL)
 					s.ChannelMessageSend(m.ChannelID, "Oh boy yummy image for me! "+attatchment.ProxyURL)
 				} else {
+					//for non-image attatchments
 					log.Println(attatchment.ContentType)
 					s.ChannelMessageSend(m.ChannelID, "*gorps your files* Oh that's not quite as good as an image.")
 				}
 			}
 		} else {
+			//for messages with no attatchments
 			s.ChannelMessageSend(m.ChannelID, "Hey that's me! Gimme an image I've been so good :D")
 		}
+	} else if strings.Contains(strings.ToLower(m.Content), "good boy") {
+		//Good Boy GIFs, replies with any of the following
+		goodBoyGIF := ""
+		switch rand.IntN(8) {
+		case 1:
+			goodBoyGIF = "https://c.tenor.com/_4xCiEhhoZsAAAAd/tenor.gif"
+		case 2:
+			goodBoyGIF = "https://c.tenor.com/4jSFH4ktsHsAAAAC/tenor.gif"
+		case 3:
+			goodBoyGIF = "https://c.tenor.com/vXG7hQc33IoAAAAC/tenor.gif"
+		case 4:
+			goodBoyGIF = "https://c.tenor.com/cDJj3LEw0UIAAAAd/tenor.gif"
+		case 5:
+			goodBoyGIF = "https://c.tenor.com/ts6NhvDRU1AAAAAd/tenor.gif"
+		case 6:
+			goodBoyGIF = "https://c.tenor.com/qIxZz0K4yVQAAAAC/tenor.gif"
+		case 7:
+			goodBoyGIF = "https://tenor.com/view/straight-face-inuyasha-inuyahsa-gif-21752958"
+		default:
+			goodBoyGIF = "https://c.tenor.com/KY0JkwS42xEAAAAd/tenor.gif"
+
+		}
+
+		s.ChannelMessageSend(m.ChannelID, goodBoyGIF)
+
 	}
 }
 
