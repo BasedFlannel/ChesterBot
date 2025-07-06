@@ -33,3 +33,4 @@ go.work.sum
 
 #auth.key file so noboy accidentally uploads their bot keys
 bot.key
+imgchest.key

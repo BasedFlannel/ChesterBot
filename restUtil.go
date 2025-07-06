@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 func restGet(url string) string {
@@ -24,20 +26,50 @@ func restGet(url string) string {
 	return string(data)
 }
 
-func restPut() {
-	// Replace with the API ID provided by crudcrud.com
+func restPutImg(imgUrl string) {
+	// Replace with the API ID provided by imgchest
 	apiID := "XXXXXX"
 
-	// HTTP endpoint with path of resource (vehicles)
-	createResourceURL := fmt.Sprintf("https://crudcrud.com/api/%s/vehicles",
-		apiID)
+	// HTTP endpoint for uploading new posts
+	createResourceURL := "https://api.imgchest.com/v1/post"
+
+	// Declare these here so they can be used in the below two if blocks and
+	// still carry over to the end of this function.
+	var base64img string
+
+	// pull image from URL and convert into a base64 encoding of bytes to send to imgchest
+	if imgUrl != "" {
+
+		resp, err := http.Get(imgUrl)
+		if err != nil {
+			fmt.Println("Error retrieving the file, ", err)
+			return
+		}
+
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+
+		img, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("Error reading the response, ", err)
+			return
+		}
+
+		//contentType = http.DetectContentType(img)
+		base64img = base64.StdEncoding.EncodeToString(img)
+	}
+
+	//title string based on date and random number
+	titleString := "Chester Upload " + time.Now().Format("RFC3339Nano")
 
 	// JSON payload containing resource information
 	requestBody, _ := json.Marshal(map[string]string{
-		"color":     "White",
-		"license":   "ABC123",
-		"numWheels": "4",
-		"type":      "Car",
+		"title":     titleString,
+		"privacy":   "secret",
+		"anonymous": "false",
+		"nsfw":      "false",
+		"images":    "[" + base64img + "]",
 	})
 
 	// Converting request body into bytes buffer
@@ -51,6 +83,8 @@ func restPut() {
 
 	// Adding application/json as payload type
 	request.Header.Add("Content-Type", "application/json")
+	//Adding API Key as a header
+	request.Header.Add("Authorization", apiID)
 
 	client := &http.Client{}
 
